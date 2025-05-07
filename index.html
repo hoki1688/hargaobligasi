@@ -17,7 +17,7 @@
 <body>
   <div id="timestamp"></div>
   <h2>Daftar Harga Obligasi FR (BCA)</h2>
-  <div id="note">📌 <strong>Catatan:</strong> Sel dengan <span style="background-color:lightpink; padding: 0 4px;">warna merah muda</span> menunjukkan <strong>Harga Beli di bawah 100%</strong>.</div>
+  <div id="note">📌 <strong>Catatan:</strong> Sel dengan <span style="background-color:lightpink; padding: 0 4px;">warna merah muda</span> menunjukkan <strong>Harga Beli &lt; 100</strong>.</div>
   <table id="frTable"></table>
 
   <script>
@@ -40,15 +40,15 @@
             let alignRight = false;
             let highlightRed = false;
 
-            // Format tanggal pada kolom 2 (Jatuh Tempo)
-            if (rowIndex !== 0 && colIndex === 2) {
+            // Format tanggal (Jatuh Tempo dan Last Update)
+            if (rowIndex !== 0 && (colIndex === 2 || colIndex === row.length - 1)) {
               const date = new Date(cell);
               if (!isNaN(date)) {
                 content = `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
               }
             }
 
-            // Format tingkat kupon menjadi 3 desimal, koma
+            // Format Tingkat Kupon
             if (rowIndex !== 0 && colIndex === 3) {
               let num = parseFloat(cell.toString().replace(',', '.'));
               if (num > 1000) num = num / 1000;
@@ -58,7 +58,7 @@
               }
             }
 
-            // Harga Beli, Jual, dan Yield
+            // Format Harga Beli, Harga Jual, Yield
             if (rowIndex !== 0 && [4, 5, 6].includes(colIndex)) {
               let num = parseFloat(cell.toString().replace(',', '.'));
               if (!isNaN(num)) {
@@ -70,21 +70,25 @@
               }
             }
 
-            // Format Last Update
-            if (rowIndex !== 0 && colIndex === row.length - 1) {
-              const date = new Date(cell);
-              if (!isNaN(date)) {
-                content = `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
-              }
-            }
-
             const el = document.createElement(rowIndex === 0 ? "th" : "td");
 
-            // Ganti header kolom ke-6 dengan "Yield (%)"
-            if (rowIndex === 0 && colIndex === 6) {
-              el.textContent = "Yield (%)";
+            // Ubah header
+            if (rowIndex === 0) {
+              if (colIndex === 0) {
+                el.textContent = "No";
+              } else if (colIndex === 3) {
+                el.textContent = "Kupon (% p.a.)";
+              } else if (colIndex === 6) {
+                el.textContent = "Yield (%)";
+              } else {
+                el.textContent = cell;
+              }
             } else {
-              el.textContent = content;
+              if (colIndex === 0) {
+                el.textContent = rowIndex; // Nomor urut
+              } else {
+                el.textContent = content;
+              }
             }
 
             if (alignRight) el.classList.add("right-align");
