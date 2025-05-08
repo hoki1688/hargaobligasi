@@ -6,36 +6,85 @@
   <link rel="icon" href="icon.png" type="image/png">
   <link rel="apple-touch-icon" href="icon.png">
   <style>
-    body { font-family: Arial, sans-serif; padding: 2em; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1em; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    th { background-color: #f2f2f2; text-align: center; }
-    .right-align { text-align: right; }
-    .highlight-red { background-color: lightpink; }
-    #timestamp { font-size: 1.2em; margin-bottom: 0.5em; color: #333; }
-    #note { background: #fff0f0; border-left: 5px solid pink; padding: 10px; margin-top: 0.5em; margin-bottom: 1em; }
-    .tab-button { 
-      padding: 14px 26px; /* Meningkatkan padding untuk tab */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2em;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1em;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+
+    .right-align {
+      text-align: right;
+    }
+
+    .highlight-red {
+      background-color: lightpink;
+    }
+
+    #timestamp {
+      font-size: 1.2em;
+      margin-bottom: 0.5em;
+      color: #333;
+    }
+
+    #note {
+      background: #fff0f0;
+      border-left: 5px solid pink;
+      padding: 10px;
+      margin: 0.5em 0 1em;
+    }
+
+    .tab-button {
+      padding: 14px 26px;
       margin-right: 10px;
       cursor: pointer;
       background: #e0e0e0;
       border: none;
       border-radius: 10px;
-      font-size: 26px; /* Ukuran font lebih besar */
+      font-size: 26px;
     }
-    .tab-button.active { background: #d0d0d0; font-weight: bold; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .center-align { text-align: center; }
+
+    .tab-button.active {
+      background: #d0d0d0;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .center-align {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
+  <!-- Tab Navigasi -->
   <div>
     <button class="tab-button active" onclick="showTab('obligasi')">HARGA OBLIGASI</button>
     <button class="tab-button" onclick="showTab('kurs')">KURS BCA</button>
     <button class="tab-button" onclick="showTab('gold')">HARGA EMAS</button>
   </div>
 
+  <!-- Konten Obligasi -->
   <div id="obligasi" class="tab-content active">
     <div id="timestamp"></div>
     <h2>Daftar Harga Obligasi (BCA)</h2>
@@ -43,42 +92,30 @@
     <table id="frTable"></table>
   </div>
 
+  <!-- Konten Kurs -->
   <div id="kurs" class="tab-content">
     <h2>Daftar Kurs BCA</h2>
     <table id="kursTable"></table>
   </div>
 
+  <!-- Konten Emas -->
   <div id="gold" class="tab-content">
-
-    <!-- Tabel Harga Emas dari Harga Emas Net -->
     <h3>Harga Emas</h3>
     <table id="goldTable2">
       <thead>
         <tr>
-          <th>SUMBER 1</th>
-          <th></th>
-		  <th></th>
-          <th></th>
-		  <th>SUMBER 2</th>
-          <th></th>
-		  <th></th>
-          <th></th>
-		  <th>SUMBER 3</th>
-          <th></th>
-		  <th></th>
+          <th>SUMBER 1</th><th></th><th></th><th></th>
+          <th>SUMBER 2</th><th></th><th></th><th></th>
+          <th>SUMBER 3</th><th></th><th></th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td></td>
-          <td id="goldTable2Data"></td>
-        </tr>
+        <tr><td></td><td id="goldTable2Data"></td></tr>
       </tbody>
     </table>
-
-
   </div>
 
+  <!-- JavaScript -->
   <script>
     const webAppURL = "https://script.google.com/macros/s/AKfycbxgrpVyfNXfp_ddwqcvtbE1VGWM6yKRImGcHJf3_wnitnEMnbYNicFu3GWJk3xhbeG-/exec";
 
@@ -99,13 +136,16 @@
     function renderObligasi(data) {
       const table = document.getElementById("frTable");
       const timestampEl = document.getElementById("timestamp");
+
       const now = new Date();
       const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
       const formattedDate = `${now.getDate().toString().padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} WIB`;
+
       timestampEl.textContent = `Data ditampilkan pada: ${formattedDate}`;
 
       data.forEach((row, rowIndex) => {
         const tr = document.createElement("tr");
+
         row.forEach((cell, colIndex) => {
           let content = cell;
           let alignRight = false;
@@ -132,36 +172,27 @@
             if (!isNaN(num)) {
               content = num.toFixed(2).replace('.', ',');
               alignRight = true;
-              if (colIndex === 4 && num < 100) {
-                highlightRed = true;
-              }
+              if (colIndex === 4 && num < 100) highlightRed = true;
             }
           }
 
           const el = document.createElement(rowIndex === 0 ? "th" : "td");
 
           if (rowIndex === 0) {
-            if (colIndex === 0) {
-              el.textContent = "No";
-            } else if (colIndex === 3) {
-              el.textContent = "Kupon (% p.a.)";
-            } else if (colIndex === 6) {
-              el.textContent = "Yield (%)";
-            } else {
-              el.textContent = cell;
-            }
+            if (colIndex === 0) el.textContent = "No";
+            else if (colIndex === 3) el.textContent = "Kupon (% p.a.)";
+            else if (colIndex === 6) el.textContent = "Yield (%)";
+            else el.textContent = cell;
           } else {
-            if (colIndex === 0) {
-              el.textContent = rowIndex;
-            } else {
-              el.textContent = content;
-            }
+            if (colIndex === 0) el.textContent = rowIndex;
+            else el.textContent = content;
           }
 
           if (alignRight) el.classList.add("right-align");
           if (highlightRed) el.classList.add("highlight-red");
           tr.appendChild(el);
         });
+
         table.appendChild(tr);
       });
     }
@@ -170,64 +201,61 @@
       const table = document.getElementById("kursTable");
 
       const headerRow = document.createElement("tr");
-      const th1 = document.createElement("th");
-      th1.textContent = "Mata Uang";
-      headerRow.appendChild(th1);
+      const headers = [
+        { text: data[0][0], colspan: 1 },
+        { text: data[0][1], colspan: 2 },
+        { text: data[0][3], colspan: 2 },
+        { text: data[0][5], colspan: 2 }
+      ];
 
-      const th2 = document.createElement("th");
-      th2.setAttribute("colspan", "2");
-      th2.textContent = "e-Rate 08 Mei 2025 / 13.39 WIB";
-      headerRow.appendChild(th2);
-
-      const th3 = document.createElement("th");
-      th3.setAttribute("colspan", "2");
-      th3.textContent = "TT Counter 08 Mei 2025 / 11.47 WIB";
-      headerRow.appendChild(th3);
-
-      const th4 = document.createElement("th");
-      th4.setAttribute("colspan", "2");
-      th4.textContent = "Bank Notes 08 Mei 2025 / 11.50 WIB";
-      headerRow.appendChild(th4);
+      headers.forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h.text;
+        if (h.colspan > 1) th.setAttribute("colspan", h.colspan);
+        headerRow.appendChild(th);
+      });
 
       table.appendChild(headerRow);
 
-      data.slice(1).forEach((row, i) => {
+      data.slice(1).forEach(row => {
         const tr = document.createElement("tr");
         row.forEach((cell, index) => {
-          const el = document.createElement(i === 0 ? "th" : "td");
-          el.textContent = cell;
-          if (i >= 1 || index === 5 || index === 6) {
-            el.classList.add("right-align");
-          }
-
-          if (i === 0 ) {
-            el.classList.add("center-align");
-          }
-
-          tr.appendChild(el);
+          const td = document.createElement("td");
+          td.textContent = cell;
+          if (index > 0) td.classList.add("right-align");
+          tr.appendChild(td);
         });
         table.appendChild(tr);
       });
     }
 
     function renderGold(data) {
-
-      // Tabel 2: E3:G17
       const table2 = data.slice(2, 17);
       const goldTable2 = document.getElementById("goldTable2").getElementsByTagName('tbody')[0];
-      table2.forEach(row => {
+
+      table2.forEach((row, rowIndex) => {
         const tr = document.createElement("tr");
-        row.forEach(cell => {
+
+        if (rowIndex === 2) {
+          tr.style.backgroundColor = "#f2f2f2";
+        }
+
+        row.forEach((cell, colIndex) => {
           const td = document.createElement("td");
           td.textContent = cell;
+
+          if (colIndex === 3 || colIndex === 7) {
+            td.style.backgroundColor = "#f2f2f2";
+          }
+
           tr.appendChild(td);
         });
+
         goldTable2.appendChild(tr);
       });
-
-
     }
 
+    // Memuat semua data setelah halaman siap
     fetchSheet("OBLIGASI", renderObligasi);
     fetchSheet("KURS", renderKurs);
     fetchSheet("GOLD", renderGold);
