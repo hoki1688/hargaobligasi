@@ -15,13 +15,13 @@
     #timestamp { font-size: 0.9em; margin-bottom: 0.5em; color: #333; }
     #note { background: #fff0f0; border-left: 5px solid pink; padding: 10px; margin-top: 0.5em; margin-bottom: 1em; }
     .tab-button { 
-      padding: 12px 24px; /* Meningkatkan padding untuk tab */
+      padding: 14px 26px; /* Meningkatkan padding untuk tab */
       margin-right: 10px;
       cursor: pointer;
       background: #e0e0e0;
       border: none;
-      border-radius: 5px;
-      font-size: 16px; /* Ukuran font lebih besar */
+      border-radius: 10px;
+      font-size: 26px; /* Ukuran font lebih besar */
     }
     .tab-button.active { background: #d0d0d0; font-weight: bold; }
     .tab-content { display: none; }
@@ -31,14 +31,14 @@
 </head>
 <body>
   <div>
-    <button class="tab-button active" onclick="showTab('obligasi')">Obligasi FR</button>
-    <button class="tab-button" onclick="showTab('kurs')">Kurs BCA</button>
+    <button class="tab-button active" onclick="showTab('obligasi')">HARGA OBLIGASI</button>
+    <button class="tab-button" onclick="showTab('kurs')">KURS BCA</button>
   </div>
 
   <div id="obligasi" class="tab-content active">
     <div id="timestamp"></div>
-    <h2>Daftar Harga Obligasi FR (BCA)</h2>
-    <div id="note">?? <strong>Catatan:</strong> Sel <span style="background-color:lightpink; padding: 0 4px;">warna merah</span> menunjukkan <strong>Harga Beli &lt; 100</strong>.</div>
+    <h2>Daftar Harga Obligasi (BCA)</h2>
+    <div id="note">📌 <strong>Catatan:</strong> Sel <span style="background-color:lightpink; padding: 0 4px;">warna merah</span> menunjukkan <strong>Harga Beli &lt; 100</strong>.</div>
     <table id="frTable"></table>
   </div>
 
