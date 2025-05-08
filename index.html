@@ -49,57 +49,34 @@
   </div>
 
   <div id="gold" class="tab-content">
-    <h2>Harga Emas</h2>
-    <!-- Tabel Harga Emas dari Aneka Logam -->
-    <h3>Aneka Logam</h3>
-    <table id="goldTable1">
-      <thead>
-        <tr>
-          <th>Harga Emas</th>
-          <th>Nilai</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Harga Emas Aneka Logam</td>
-          <td id="goldTable1Data">Loading...</td>
-        </tr>
-      </tbody>
-    </table>
 
     <!-- Tabel Harga Emas dari Harga Emas Net -->
-    <h3>Harga Emas Net</h3>
+    <h3>Harga Emas</h3>
     <table id="goldTable2">
       <thead>
         <tr>
-          <th>Harga Emas</th>
-          <th>Nilai</th>
+          <th>SUMBER 1</th>
+          <th></th>
+		  <th></th>
+          <th></th>
+		  <th>SUMBER 2</th>
+          <th></th>
+		  <th></th>
+          <th></th>
+		  <th>SUMBER 3</th>
+          <th></th>
+		  <th></th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Harga Emas dari Harga Emas Net</td>
-          <td id="goldTable2Data">Loading...</td>
+          <td></td>
+          <td id="goldTable2Data"></td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Tabel Harga Emas dari Harga Emass -->
-    <h3>Harga Emass</h3>
-    <table id="goldTable3">
-      <thead>
-        <tr>
-          <th>Harga Emas</th>
-          <th>Nilai</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Harga Emas dari Harga Emass</td>
-          <td id="goldTable3Data">Loading...</td>
-        </tr>
-      </tbody>
-    </table>
+
   </div>
 
   <script>
@@ -234,18 +211,6 @@
     }
 
     function renderGold(data) {
-      // Tabel 1: A5:C13
-      const table1 = data.slice(4, 13);
-      const goldTable1 = document.getElementById("goldTable1").getElementsByTagName('tbody')[0];
-      table1.forEach(row => {
-        const tr = document.createElement("tr");
-        row.forEach(cell => {
-          const td = document.createElement("td");
-          td.textContent = cell;
-          tr.appendChild(td);
-        });
-        goldTable1.appendChild(tr);
-      });
 
       // Tabel 2: E3:G17
       const table2 = data.slice(2, 17);
@@ -260,18 +225,7 @@
         goldTable2.appendChild(tr);
       });
 
-      // Tabel 3: I5:K16
-      const table3 = data.slice(4, 16);
-      const goldTable3 = document.getElementById("goldTable3").getElementsByTagName('tbody')[0];
-      table3.forEach(row => {
-        const tr = document.createElement("tr");
-        row.forEach(cell => {
-          const td = document.createElement("td");
-          td.textContent = cell;
-          tr.appendChild(td);
-        });
-        goldTable3.appendChild(tr);
-      });
+
     }
 
     fetchSheet("OBLIGASI", renderObligasi);
