@@ -14,10 +14,19 @@
     .highlight-red { background-color: lightpink; }
     #timestamp { font-size: 0.9em; margin-bottom: 0.5em; color: #333; }
     #note { background: #fff0f0; border-left: 5px solid pink; padding: 10px; margin-top: 0.5em; margin-bottom: 1em; }
-    .tab-button { padding: 8px 16px; margin-right: 5px; cursor: pointer; background: #e0e0e0; border: none; border-radius: 5px; }
+    .tab-button { 
+      padding: 12px 24px; /* Meningkatkan padding untuk tab */
+      margin-right: 10px;
+      cursor: pointer;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px; /* Ukuran font lebih besar */
+    }
     .tab-button.active { background: #d0d0d0; font-weight: bold; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    .center-align { text-align: center; }
   </style>
 </head>
 <body>
@@ -43,7 +52,7 @@
 
     function showTab(tab) {
       document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tabContent => tabContent.classList.remove('active'));
       document.querySelector(`button[onclick="showTab('${tab}')"]`).classList.add('active');
       document.getElementById(tab).classList.add('active');
     }
@@ -127,11 +136,42 @@
 
     function renderKurs(data) {
       const table = document.getElementById("kursTable");
-      data.forEach((row, i) => {
+
+      const headerRow = document.createElement("tr");
+      const th1 = document.createElement("th");
+      th1.textContent = "Mata Uang";
+      headerRow.appendChild(th1);
+
+      const th2 = document.createElement("th");
+      th2.setAttribute("colspan", "2");
+      th2.textContent = "e-Rate 08 Mei 2025 / 13.39 WIB";
+      headerRow.appendChild(th2);
+
+      const th3 = document.createElement("th");
+      th3.setAttribute("colspan", "2");
+      th3.textContent = "TT Counter 08 Mei 2025 / 11.47 WIB";
+      headerRow.appendChild(th3);
+
+      const th4 = document.createElement("th");
+      th4.setAttribute("colspan", "2");
+      th4.textContent = "Bank Notes 08 Mei 2025 / 11.50 WIB";
+      headerRow.appendChild(th4);
+
+      table.appendChild(headerRow);
+
+      data.slice(1).forEach((row, i) => {
         const tr = document.createElement("tr");
-        row.forEach(cell => {
+        row.forEach((cell, index) => {
           const el = document.createElement(i === 0 ? "th" : "td");
           el.textContent = cell;
+          if (i >= 1 || index === 5 || index === 6) {
+            el.classList.add("right-align");
+          }
+
+          if (i === 0 ) {
+            el.classList.add("center-align");
+          }
+
           tr.appendChild(el);
         });
         table.appendChild(tr);
