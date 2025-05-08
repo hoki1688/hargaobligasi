@@ -2,10 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Harga Obligasi FR (BCA)</title>
+  <title>Info Keuangan (Obligasi & Kurs)</title>
   <link rel="icon" href="icon.png" type="image/png">
   <link rel="apple-touch-icon" href="icon.png">
-
   <style>
     body { font-family: Arial, sans-serif; padding: 2em; }
     table { border-collapse: collapse; width: 100%; margin-top: 1em; }
@@ -15,98 +14,132 @@
     .highlight-red { background-color: lightpink; }
     #timestamp { font-size: 0.9em; margin-bottom: 0.5em; color: #333; }
     #note { background: #fff0f0; border-left: 5px solid pink; padding: 10px; margin-top: 0.5em; margin-bottom: 1em; }
+    .tab-button { padding: 8px 16px; margin-right: 5px; cursor: pointer; background: #e0e0e0; border: none; border-radius: 5px; }
+    .tab-button.active { background: #d0d0d0; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
   </style>
 </head>
 <body>
-  <div id="timestamp"></div>
-  <h2>Daftar Harga Obligasi FR (BCA)</h2>
-  <div id="note">📌 <strong>Catatan:</strong> Sel <span style="background-color:lightpink; padding: 0 4px;">warna merah</span> menunjukkan <strong>Harga Beli &lt; 100</strong>.</div>
-  <table id="frTable"></table>
+  <div>
+    <button class="tab-button active" onclick="showTab('obligasi')">Obligasi FR</button>
+    <button class="tab-button" onclick="showTab('kurs')">Kurs BCA</button>
+  </div>
+
+  <div id="obligasi" class="tab-content active">
+    <div id="timestamp"></div>
+    <h2>Daftar Harga Obligasi FR (BCA)</h2>
+    <div id="note">?? <strong>Catatan:</strong> Sel <span style="background-color:lightpink; padding: 0 4px;">warna merah</span> menunjukkan <strong>Harga Beli &lt; 100</strong>.</div>
+    <table id="frTable"></table>
+  </div>
+
+  <div id="kurs" class="tab-content">
+    <h2>Daftar Kurs BCA</h2>
+    <table id="kursTable"></table>
+  </div>
 
   <script>
-    // Tampilkan waktu lokal pengguna
-    const timestampEl = document.getElementById("timestamp");
-    const now = new Date(); // waktu lokal
-    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-    const formattedDate = `${now.getDate().toString().padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} WIB`;
-    timestampEl.textContent = `Data ditampilkan pada: ${formattedDate}`;
+    const webAppURL = "https://script.google.com/macros/s/AKfycbxgrpVyfNXfp_ddwqcvtbE1VGWM6yKRImGcHJf3_wnitnEMnbYNicFu3GWJk3xhbeG-/exec";
 
-    fetch("https://script.google.com/macros/s/AKfycbxgrpVyfNXfp_ddwqcvtbE1VGWM6yKRImGcHJf3_wnitnEMnbYNicFu3GWJk3xhbeG-/exec")
-      .then(res => res.json())
-      .then(data => {
-        const table = document.getElementById("frTable");
+    function showTab(tab) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelector(`button[onclick="showTab('${tab}')"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
 
-        data.forEach((row, rowIndex) => {
-          const tr = document.createElement("tr");
+    function fetchSheet(sheet, callback) {
+      fetch(`${webAppURL}?sheet=${sheet}`)
+        .then(res => res.json())
+        .then(callback)
+        .catch(err => console.error(`Gagal memuat data ${sheet}:`, err));
+    }
 
-          row.forEach((cell, colIndex) => {
-            let content = cell;
-            let alignRight = false;
-            let highlightRed = false;
+    function renderObligasi(data) {
+      const table = document.getElementById("frTable");
+      const timestampEl = document.getElementById("timestamp");
+      const now = new Date();
+      const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+      const formattedDate = `${now.getDate().toString().padStart(2, '0')} ${months[now.getMonth()]} ${now.getFullYear()}, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} WIB`;
+      timestampEl.textContent = `Data ditampilkan pada: ${formattedDate}`;
 
-            // Format tanggal (Jatuh Tempo dan Last Update)
-            if (rowIndex !== 0 && (colIndex === 2 || colIndex === row.length - 1)) {
-              const date = new Date(cell);
-              if (!isNaN(date)) {
-                content = `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
+      data.forEach((row, rowIndex) => {
+        const tr = document.createElement("tr");
+        row.forEach((cell, colIndex) => {
+          let content = cell;
+          let alignRight = false;
+          let highlightRed = false;
+
+          if (rowIndex !== 0 && (colIndex === 2 || colIndex === row.length - 1)) {
+            const date = new Date(cell);
+            if (!isNaN(date)) {
+              content = `${date.getDate().toString().padStart(2, '0')} ${months[date.getMonth()]} ${date.getFullYear()}`;
+            }
+          }
+
+          if (rowIndex !== 0 && colIndex === 3) {
+            let num = parseFloat(cell.toString().replace(',', '.'));
+            if (num > 1000) num = num / 1000;
+            if (!isNaN(num)) {
+              content = num.toFixed(3).replace('.', ',');
+              alignRight = true;
+            }
+          }
+
+          if (rowIndex !== 0 && [4, 5, 6].includes(colIndex)) {
+            let num = parseFloat(cell.toString().replace(',', '.'));
+            if (!isNaN(num)) {
+              content = num.toFixed(2).replace('.', ',');
+              alignRight = true;
+              if (colIndex === 4 && num < 100) {
+                highlightRed = true;
               }
             }
+          }
 
-            // Format Kupon
-            if (rowIndex !== 0 && colIndex === 3) {
-              let num = parseFloat(cell.toString().replace(',', '.'));
-              if (num > 1000) num = num / 1000;
-              if (!isNaN(num)) {
-                content = num.toFixed(3).replace('.', ',');
-                alignRight = true;
-              }
-            }
+          const el = document.createElement(rowIndex === 0 ? "th" : "td");
 
-            // Format Harga Beli, Harga Jual, Yield
-            if (rowIndex !== 0 && [4, 5, 6].includes(colIndex)) {
-              let num = parseFloat(cell.toString().replace(',', '.'));
-              if (!isNaN(num)) {
-                content = num.toFixed(2).replace('.', ',');
-                alignRight = true;
-                if (colIndex === 4 && num < 100) {
-                  highlightRed = true;
-                }
-              }
-            }
-
-            const el = document.createElement(rowIndex === 0 ? "th" : "td");
-
-            // Judul kolom
-            if (rowIndex === 0) {
-              if (colIndex === 0) {
-                el.textContent = "No";
-              } else if (colIndex === 3) {
-                el.textContent = "Kupon (% p.a.)";
-              } else if (colIndex === 6) {
-                el.textContent = "Yield (%)";
-              } else {
-                el.textContent = cell;
-              }
+          if (rowIndex === 0) {
+            if (colIndex === 0) {
+              el.textContent = "No";
+            } else if (colIndex === 3) {
+              el.textContent = "Kupon (% p.a.)";
+            } else if (colIndex === 6) {
+              el.textContent = "Yield (%)";
             } else {
-              if (colIndex === 0) {
-                el.textContent = rowIndex; // nomor urut
-              } else {
-                el.textContent = content;
-              }
+              el.textContent = cell;
             }
+          } else {
+            if (colIndex === 0) {
+              el.textContent = rowIndex;
+            } else {
+              el.textContent = content;
+            }
+          }
 
-            if (alignRight) el.classList.add("right-align");
-            if (highlightRed) el.classList.add("highlight-red");
-            tr.appendChild(el);
-          });
-
-          table.appendChild(tr);
+          if (alignRight) el.classList.add("right-align");
+          if (highlightRed) el.classList.add("highlight-red");
+          tr.appendChild(el);
         });
-      })
-      .catch(err => {
-        document.getElementById("frTable").innerHTML = "<tr><td>Gagal memuat data.</td></tr>";
-        console.error(err);
+        table.appendChild(tr);
       });
+    }
+
+    function renderKurs(data) {
+      const table = document.getElementById("kursTable");
+      data.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+          const el = document.createElement(i === 0 ? "th" : "td");
+          el.textContent = cell;
+          tr.appendChild(el);
+        });
+        table.appendChild(tr);
+      });
+    }
+
+    fetchSheet("OBLIGASI", renderObligasi);
+    fetchSheet("KURS", renderKurs);
   </script>
 </body>
 </html>
